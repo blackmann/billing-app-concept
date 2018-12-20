@@ -3,7 +3,7 @@ from codecs import register
 from django.contrib import admin
 from django.template.context_processors import request
 
-from web.models import City, Client, ClientType, Country, Transaction, Zone
+from web.models import City, Client, ClientType, Country, Transmission, Zone
 
 
 @admin.register(Client)
@@ -14,9 +14,9 @@ class ClientAdmin(admin.ModelAdmin):
         return obj.client_type.title
 
 
-@admin.register(Transaction)
+@admin.register(Transmission)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('client', 'source', 'destination', 'created_on', )
+    list_display = ('source', 'destination', 'created_on', )
     exclude = ('created_by', )
 
     def get_queryset(self, request):

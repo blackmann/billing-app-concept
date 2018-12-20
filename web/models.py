@@ -63,17 +63,14 @@ class Client(models.Model):
         return self.title
 
 
-class Transaction(models.Model):
-    receipt_number = models.CharField(max_length=50)
-    source = models.CharField(max_length=200)
-    destination = models.CharField(max_length=200)
-    client = models.ForeignKey(Client, related_name="transactions", on_delete=models.CASCADE)
-    a_weight = models.DecimalField(decimal_places=2, max_digits=10)
-    s_weight = models.DecimalField(decimal_places=2, max_digits=10)
-    f_index = models.IntegerField()
-    total_amount = models.DecimalField(decimal_places=2, max_digits=10)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
-    zone = models.ForeignKey(Zone, on_delete=models.SET_NULL, null=True)
+class Transmission(models.Model):
+    destination = models.CharField(max_length=100)
+    received_date = models.DateTimeField()
+    sent_date = models.DateTimeField()
+    days = models.PositiveIntegerField()
+    source = models.CharField(max_length=100)
+    item_category = models.CharField(max_length=100)
+    item_id = models.IntegerField(null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
