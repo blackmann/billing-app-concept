@@ -43,7 +43,7 @@ class AuthoredAdmin(admin.ModelAdmin):
     exclude = ('created_by', )
 
     def get_queryset(self, request):
-        qs = super(TransactionAdmin, self).get_queryset(request)
+        qs = super(AuthoredAdmin, self).get_queryset(request)
 
         if request.user.is_superuser:
             return qs
