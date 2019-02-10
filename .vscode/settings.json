@@ -1,3 +1,8 @@
 {
-    "python.pythonPath": "~/codes/billingapp/bin/python"
+    "python.pythonPath": "~/codes/billapp/bin/python",
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--load-plugins",
+        "pylint_django"
+    ],
 }

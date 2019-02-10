@@ -2,39 +2,17 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class ClientType(models.Model):
-    title = models.CharField(max_length=50)
-
-    class Meta:
-        ordering = ('title', )
-
-    def __str__(self):
-        return self.title
-
-
-class Country(models.Model):
-    title = models.CharField(max_length=100)
-
-    class Meta:
-        ordering = ('title', )
-
-    def __str__(self):
-        return self.title
+Item_Cat = (
+    ('RLT', 'registered letter'),
+    ('OLT', 'ordinary letter'),
+    ('RIT', 'registered item'),
+    ('PAR', 'parcel'),
+    ('EMS', 'EMS'),
+)
 
 
-class City(models.Model):
-    title = models.CharField(max_length=100)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
-
-    class Meta:
-        ordering = ('title', )
-
-    def __str__(self):
-        return "%s, %s" % (self.title, self.country.title)
-
-
-class Zone(models.Model):
-    title = models.CharField(max_length=100)
+class DestRegion(models.Model):
+    title = models.CharField(max_length=30)
 
     class Meta:
         ordering = ('title',)
@@ -43,18 +21,18 @@ class Zone(models.Model):
         return self.title
 
 
-class Client(models.Model):
-    title = models.CharField(max_length=100)
-    client_type = models.ForeignKey(ClientType, on_delete=models.SET_NULL, null=True, related_name="clients")
-    city = models.ForeignKey(City, related_name="clients", on_delete=models.SET_NULL, null=True)
-    standard_weight = models.DecimalField(decimal_places=2, max_digits=10)
-    initial_charge = models.DecimalField(decimal_places=3, max_digits=10)
-    additional_charge = models.DecimalField(decimal_places=3, max_digits=10)
-    charge_cat = models.CharField(max_length=20)
-    multiplier = models.IntegerField()
-    group_code = models.CharField(max_length=20)
-    contracted_on = models.DateField()
-    created_on = models.DateTimeField(auto_now_add=True)
+class DestOffice(models.Model):
+    title = models.CharField(max_length=30)
+
+    class Meta:
+        ordering = ('title',)
+
+    def __str__(self):
+        return "%s, %s" % (self.title, self.region.title)
+
+
+class Region(models.Model):
+    title = models.CharField(max_length=30)
 
     class Meta:
         ordering = ('title', )
@@ -63,16 +41,74 @@ class Client(models.Model):
         return self.title
 
 
-class Transmission(models.Model):
-    destination = models.CharField(max_length=100)
-    received_date = models.DateTimeField()
-    sent_date = models.DateTimeField()
-    days = models.PositiveIntegerField()
-    source = models.CharField(max_length=100)
-    item_category = models.CharField(max_length=100)
-    item_id = models.IntegerField(null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+class PostOffice(models.Model):
+    title = models.CharField(max_length=30)
+    region = models.ForeignKey(
+        Region, on_delete=models.CASCADE, related_name="postoffices")
+
+    class Meta:
+        ordering = ('title', )
+
+    def __str__(self):
+        return "%s, %s" % (self.title, self.region.title)
+
+
+class InOutbound(models.Model):
+    title = models.CharField(max_length=30)
+
+    class Meta:
+        ordering = ('title',)
+
+    def __str__(self):
+        return self.title
+
+
+class MailDespatch(models.Model):
+    region = models.ForeignKey(
+        Region, related_name="despatches", on_delete=models.SET_NULL, null=True)
+    postoffice = models.ForeignKey(
+        PostOffice, related_name="officedespatches", on_delete=models.SET_NULL, null=True)
+    op_bal = models.IntegerField()
+    item_category = models.CharField(max_length=3, choices=Item_Cat)
+    date_sent = models.DateField(auto_now_add=True)
+    qty_sent = models.IntegerField()
+    dest_region = models.ForeignKey(
+        DestRegion, related_name="destinations", on_delete=models.SET_NULL, null=True)
+    dest_office = models.ForeignKey(
+        DestOffice, related_name="maildestinations", on_delete=models.SET_NULL, null=True)
+    date_received = models.DateField(auto_now_add=True)
+    qty_received = models.IntegerField()
+    qty_delivered = models.IntegerField()
+    cls_bal = models.IntegerField()
+    comment = models.TextField(max_length=100)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    received_by = models.CharField(max_length=30)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_on', )
+
+
+class Transmission(models.Model):
+    item_id = models.CharField(max_length=15, null=False)
+    item_category = models.CharField(max_length=3, choices=Item_Cat)
+    region = models.ForeignKey(
+        Region, on_delete=models.CASCADE, related_name="source_region")
+    postoffice = models.ForeignKey(
+        PostOffice, on_delete=models.CASCADE, related_name="source_office")
+    sent_date = models.DateField(auto_now_add=True)
+    dest_region = models.ForeignKey(
+        Region, on_delete=models.CASCADE, related_name="dest_region")
+    dest_postoffice = models.ForeignKey(
+        PostOffice, on_delete=models.CASCADE, related_name="dest_office")
+    standard_days = models.IntegerField()
+    received_date = models.DateField()
+    days = models.PositiveIntegerField()
+    day_difference = models.IntegerField()
+    comment = models.TextField(max_length=100)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    received_by = models.CharField(max_length=30)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('-created_on', )
