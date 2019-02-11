@@ -60,3 +60,5 @@ admin.site.register(Transmission, AuthoredAdmin)
 
 admin.site.register((DestOffice, DestRegion, Region, PostOffice,
                      InOutbound,))
+
+admin.site.site_header = "Postal Administration"

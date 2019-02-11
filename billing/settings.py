@@ -26,7 +26,7 @@ SECRET_KEY = '&%emshtj66y1eag%&ri)$4)ful=uej)9b^97co6s=bpsspdoah'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.degreat.co.uk', ]
+ALLOWED_HOSTS = ['.degreat.co.uk', 'localhost', ]
 
 
 # Application definition

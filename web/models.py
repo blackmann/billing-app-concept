@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import signals
 
 
 Item_Cat = (
@@ -102,9 +103,11 @@ class Transmission(models.Model):
     dest_postoffice = models.ForeignKey(
         PostOffice, on_delete=models.CASCADE, related_name="dest_office")
     standard_days = models.IntegerField()
-    received_date = models.DateField()
-    days = models.PositiveIntegerField()
-    day_difference = models.IntegerField()
+    received_date = models.DateField(null=True, blank=True)
+    days = models.PositiveIntegerField(default=0)
+    day_difference = models.IntegerField(
+        default=0, help_text="This is automatically calculated when the \
+            received date is set")
     comment = models.TextField(max_length=100)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     received_by = models.CharField(max_length=30)
@@ -112,3 +115,13 @@ class Transmission(models.Model):
 
     class Meta:
         ordering = ('-created_on', )
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.received_date:
+            self.set_day_difference()
+
+        return super(Transmission, self).save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
+    def set_day_difference(self):
+        diff = self.received_date - self.sent_date
+        self.day_difference = diff.days
