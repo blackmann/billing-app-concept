@@ -55,8 +55,16 @@ class AuthoredAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-admin.site.register(MailDespatch, AuthoredAdmin)
-admin.site.register(Transmission, AuthoredAdmin)
+class MailDespatchAdmin(AuthoredAdmin):
+    list_display = ('region', 'postoffice', 'created_by', )
+
+
+class TransmissionAdmin(AuthoredAdmin):
+    list_display = ('item_id', 'region', 'postoffice', 'created_by', )
+
+
+admin.site.register(MailDespatch, MailDespatchAdmin)
+admin.site.register(Transmission, TransmissionAdmin)
 
 admin.site.register((DestOffice, DestRegion, Region, PostOffice,
                      InOutbound,))
