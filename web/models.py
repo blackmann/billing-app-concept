@@ -83,7 +83,7 @@ class MailDespatch(models.Model):
     cls_bal = models.IntegerField()
     comment = models.TextField(max_length=100)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    received_by = models.CharField(max_length=30)
+    received_by = models.CharField(max_length=30, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -110,7 +110,7 @@ class Transmission(models.Model):
             received date is set")
     comment = models.TextField(max_length=100)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    received_by = models.CharField(max_length=30)
+    received_by = models.CharField(max_length=30, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
